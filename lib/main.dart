@@ -2,11 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
+import 'login.dart';
 import 'research.dart';
 import 'details.dart';
+import 'firebase_options.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 //import 'package:cached_network_image/cached_network_image.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
@@ -21,7 +30,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         scaffoldBackgroundColor: Color(0xFF1A2025),
       ),
-      home: TopGamesScreen(),
+      home: LoginPage(),
     );
   }
 }
@@ -95,11 +104,11 @@ Future<List<GameRank>> fetchMostPlayedGames() async {
       if (detailsResponse.statusCode == 200) {
         final detailsRes = jsonDecode(detailsResponse.body);
         final details =
-        GameDetails.fromJson(detailsRes[gameRank.appId.toString()]);
+            GameDetails.fromJson(detailsRes[gameRank.appId.toString()]);
         final List<dynamic> publishersJson =
-        detailsRes[gameRank.appId.toString()]['data']['publishers'];
+            detailsRes[gameRank.appId.toString()]['data']['publishers'];
         final List<String> publishers =
-        publishersJson.map((json) => json as String).toList();
+            publishersJson.map((json) => json as String).toList();
 
         final reviewsResponse = await http.get(Uri.parse(
             'https://store.steampowered.com/appreviews/${gameRank.appId}?json=1&language=fr'));
@@ -107,7 +116,7 @@ Future<List<GameRank>> fetchMostPlayedGames() async {
           final reviewsRes = jsonDecode(reviewsResponse.body);
           final List<dynamic> reviewsJson = reviewsRes['reviews'];
           final List<String> reviews =
-          reviewsJson.map((json) => json['review'] as String).toList();
+              reviewsJson.map((json) => json['review'] as String).toList();
 
           games.add(GameRank(
             rank: gameRank.rank,
@@ -118,8 +127,7 @@ Future<List<GameRank>> fetchMostPlayedGames() async {
             reviews: reviews.join('\n'),
           ));
         } else {
-          throw Exception(
-              'Failed to load reviews for game ${gameRank.appId}');
+          throw Exception('Failed to load reviews for game ${gameRank.appId}');
         }
       } else {
         throw Exception('Failed to load game details for ${gameRank.appId}');
@@ -131,7 +139,6 @@ Future<List<GameRank>> fetchMostPlayedGames() async {
     throw Exception('Failed to load top games');
   }
 }
-
 
 class TopGamesScreen extends StatefulWidget {
   @override
