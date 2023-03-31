@@ -9,12 +9,14 @@ class SteamGame {
   final String name;
   final String publisher;
   String description;
+  final List<SteamGameReview> reviews;
 
   SteamGame({
     required this.appId,
     required this.name,
     required this.publisher,
     required this.description,
+    required this.reviews,
   });
 
   factory SteamGame.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,7 @@ class SteamGame {
       name: name,
       publisher: publisher,
       description: '',
+      reviews: [],
     );
   }
 }
@@ -38,22 +41,36 @@ class SteamGameDetails {
   });
 
   factory SteamGameDetails.fromJson(Map<String, dynamic> json) {
-    final data = json['data'];
-    return SteamGameDetails(
-      description: data['about_the_game'],
-    );
+    if (json['data'] != null) {
+      final data = json['data'];
+      return SteamGameDetails(
+        description: data['detailed_description'],
+      );
+    } else {
+      return SteamGameDetails(
+        description: "No description for this game",
+      );
+    }
   }
-} /*
-Future<void> _fetchGameDescription(int appId) async {
-  final response = await http.get(Uri.parse('https://store.steampowered.com/api/appdetails?appids=$appId&cc=fr&l=fr'));
-  if (response.statusCode == 200) {
-    final Map<String, dynamic> gameDetailsJson = json.decode(response.body)['$appId'];
-    final String description = gameDetailsJson['data']['detailed_description'];
-    return description;
-  } else {
-    throw Exception('Failed to load game details');
+}
+
+class SteamGameReview {
+  final String review;
+
+  SteamGameReview({required this.review});
+
+  factory SteamGameReview.fromJson(Map<String, dynamic> json) {
+    if (json['review'] != null) {
+      return SteamGameReview(
+        review: json['review'] as String,
+      );
+    } else {
+      return SteamGameReview(
+        review: "No review on this game",
+      );
+    }
   }
-}*/
+}
 
 class MyWidget extends StatefulWidget {
   @override
@@ -63,8 +80,10 @@ class MyWidget extends StatefulWidget {
 class _MyWidgetState extends State<MyWidget> {
   // Variables
   late TextEditingController _searchController = TextEditingController();
+
   // late List<SteamGame> _games = [];
   String _searchText = "";
+
   //late Map<int, String> _gameDescriptions = {};
 
   // Appel de l'API Steam
@@ -75,7 +94,7 @@ class _MyWidgetState extends State<MyWidget> {
       final Map<String, dynamic> gamesJson = json.decode(response.body);
       List<dynamic> gamesList = gamesJson.values.toList();
       List<SteamGame> jeux = [];
-      for (int i = 0; i < 50; i++) {
+      for (int i = 0; i < 150; i++) {
         final steamGame = SteamGame.fromJson(gamesList[i]);
         final appDetailsResponse = await http.get(Uri.parse(
             'https://store.steampowered.com/api/appdetails?appids=${steamGame.appId}&cc=fr&l=fr'));
@@ -83,65 +102,47 @@ class _MyWidgetState extends State<MyWidget> {
           final detailRes = jsonDecode(appDetailsResponse.body);
           final details =
               SteamGameDetails.fromJson(detailRes[steamGame.appId.toString()]);
-          jeux.add(SteamGame(
-            appId: steamGame.appId,
-            name: steamGame.name,
-            publisher: steamGame.publisher,
-            description: details.description,
-          ));
-        } else {
-          throw Exception('Failed to load game details for ${steamGame.appId}');
+
+          final reviewsResponse = await http.get(Uri.parse(
+              'https://store.steampowered.com/appreviews/${steamGame.appId}?json=1'));
+          if (reviewsResponse.statusCode == 200) {
+            final Map<String, dynamic> resRev =
+                jsonDecode(reviewsResponse.body);
+            print("a");
+            print(resRev);
+            // List<dynamic> reviews = (resRev['query_summary'] as Map)['reviews'];
+            List<dynamic> reviews = resRev['reviews'];
+            print(reviews.length);
+            List<SteamGameReview> avis = [];
+            for (int j = 0; j < reviews.length; j++) {
+              final rev = SteamGameReview.fromJson(reviews[j]);
+              print(rev.review);
+              if (SteamGameReview(review: rev.review) != null) {
+                avis.add(SteamGameReview(review: rev.review));
+              }
+            }
+            if (reviews.length == 0) {
+              print("review==null");
+              avis.add(SteamGameReview(review: "No review for this game"));
+            }
+            jeux.add(SteamGame(
+              appId: steamGame.appId,
+              name: steamGame.name,
+              publisher: steamGame.publisher,
+              description: details.description,
+              reviews: avis,
+            ));
+          } else {
+            throw Exception(
+                'Failed to load game details for ${steamGame.appId}');
+          }
         }
       }
-      /*
-
-      //final List<dynamic> gamesList = gamesJson.values.toList();
-      //final List<SteamGame> steamGames =
-          gamesList.map((json) => SteamGame.fromJson(json)).toList();
-
-      //await _fetchGameDescriptions();
-      for (var game in steamGames) {
-        final appDetailsResponse = await http.get(Uri.parse(
-            'https://store.steampowered.com/api/appdetails?appids=${game.appId}&cc=fr&l=fr'));
-        if (appDetailsResponse.statusCode == 200) {
-          final detailRes = jsonDecode(appDetailsResponse.body);
-          final details =
-              SteamGameDetails.fromJson(detailRes[game.appId.toString()]);
-          game.description = details.description;
-        }
-      } 
-      for (int i = 0; i < steamGames.length; i++) {
-        final String description = await _fetchGameDescription(steamGames[i].appId);
-        steamGames[i].description = description;
-      }*/
       return jeux;
     } else {
       throw Exception('Failed to load games');
     }
   }
-
-/*
-  Future<void> _fetchGameDescriptions() async {
-    final List<int> appIds = _games.map((game) => game.appId).toList();
-    final String baseUrl = 'https://store.steampowered.com/api/appdetails';
-    final String queryParams =
-        '?cc=fr&l=fr&appids=${appIds.join(',')}';
-
-    final response = await http.get(Uri.parse('$baseUrl$queryParams'));
-
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> gamesJson = json.decode(response.body);
-      setState(() {
-        _games = _games.map((game) {
-          final int appId = game.appId;
-          final String description = gamesJson[appId.toString()]['data']?['detailed_description'] ?? '';
-          return game.copyWith(description: description);
-        }).toList();
-      });
-    } else {
-      throw Exception('Failed to load game descriptions');
-    }
-  }*/
 
   @override
   void initState() {
@@ -174,9 +175,10 @@ class _MyWidgetState extends State<MyWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Jeux Steam'),
+        backgroundColor: Color(0xFF1A2025),
+        title: Text('Recherche'),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: Icon(Icons.close_rounded),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -188,9 +190,10 @@ class _MyWidgetState extends State<MyWidget> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
+
               controller: _searchController,
               autofocus: true,
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: Colors.white,backgroundColor: Color(0xFF1E262C),),
               decoration: InputDecoration(
                 hintText: "Rechercher...",
                 hintStyle: TextStyle(color: Colors.white70),

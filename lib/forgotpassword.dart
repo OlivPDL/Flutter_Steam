@@ -21,92 +21,68 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        /*
-        title: Text('Forgot Password',
-          style: TextStyle(
-            color: Colors.white,
-          ),
-        ),*/
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TextFormField(
-                style: TextStyle(
-                  color: Colors.white,
-                ),
-                controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your email';
-                  }
-                  return null;
-                },
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  labelStyle: TextStyle(
-                    color: Colors.white, // changez la couleur ici
+    return Container(
+      constraints: const BoxConstraints.expand(),
+      decoration: const BoxDecoration(
+          image: DecorationImage(
+              image: AssetImage("assets/ImageBackground.png"), fit: BoxFit.cover)),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          /*
+          title: Text('Forgot Password',
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),*/
+        ),
+        body: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TextFormField(
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your email';
+                    }
+                    return null;
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    labelStyle: TextStyle(
+                      color: Colors.white, // changez la couleur ici
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(height: 16),
-              Center(
-                child: ElevatedButton(
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      try {
-                        await FirebaseAuth.instance.sendPasswordResetEmail(
-                          email: _emailController.text,
-                        );
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: Text('Password Reset',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                ),
-                              ),
-                              content: Text(
-                                  'An email with instructions to reset your password has been sent to your email address.',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                ),
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: Text('OK',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      } on FirebaseAuthException catch (e) {
-                        if (e.code == 'user-not-found') {
+                SizedBox(height: 16),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      if (_formKey.currentState!.validate()) {
+                        try {
+                          await FirebaseAuth.instance.sendPasswordResetEmail(
+                            email: _emailController.text,
+                          );
                           showDialog(
                             context: context,
                             builder: (context) {
                               return AlertDialog(
-                                title: Text('Error',
+                                title: Text('Password Reset',
                                   style: TextStyle(
                                     color: Colors.white,
                                   ),
                                 ),
-                                content: Text('No user found for that email.',
+                                content: Text(
+                                    'An email with instructions to reset your password has been sent to your email address.',
                                   style: TextStyle(
                                     color: Colors.white,
                                   ),
@@ -126,20 +102,52 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                               );
                             },
                           );
+                        } on FirebaseAuthException catch (e) {
+                          if (e.code == 'user-not-found') {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: Text('Error',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  content: Text('No user found for that email.',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text('OK',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          }
+                        } catch (e) {
+                          print(e);
                         }
-                      } catch (e) {
-                        print(e);
                       }
-                    }
-                  },
-                  child: Text('Renvoyer mon mot de passe',
-                    style: TextStyle(
-                      color: Colors.white,
+                    },
+                    child: Text('Renvoyer mon mot de passe',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

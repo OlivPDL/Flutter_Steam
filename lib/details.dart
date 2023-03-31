@@ -14,6 +14,7 @@ class GameDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color(0xFF1A2025),
         title: Text('Détail du jeu'),
       ),
       body: Column(
@@ -50,7 +51,8 @@ class GameDetail extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: SingleChildScrollView(
                 child: Text(
-                  game.description,
+
+                  game.reviews[0].review,
                   style: TextStyle(color: Colors.white),
                 ),
               ),
@@ -107,7 +109,7 @@ class SteamGameDetail extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: SingleChildScrollView(
                 child: Text(
-                  game.description,
+                  game.reviews[0].review,
                   style: TextStyle(color: Colors.white),
                 ),
               ),

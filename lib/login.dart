@@ -24,8 +24,16 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Container(
+      constraints: const BoxConstraints.expand(),
+      decoration: const BoxDecoration(
+          image: DecorationImage(
+              image: AssetImage("assets/ImageBackground.png"), fit: BoxFit.cover)),
 
+
+
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
       body: Padding(
         padding: EdgeInsets.all(30.10),
         child: Form(
@@ -69,7 +77,7 @@ class _LoginPageState extends State<LoginPage> {
                   labelStyle: TextStyle(
                     color: Colors.white, // changez la couleur ici
                   ),
-              ),
+                ),
               ),
               SizedBox(height: 16),
               Row(
@@ -99,9 +107,11 @@ class _LoginPageState extends State<LoginPage> {
                         }
                       }
                     },
-                    child: Text('Se connecter',style: TextStyle(
-                      color: Colors.white,
-                    ),
+                    child: Text(
+                      'Se connecter',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                   TextButton(
@@ -112,7 +122,8 @@ class _LoginPageState extends State<LoginPage> {
                             builder: (context) => ForgotPasswordPage()),
                       );
                     },
-                    child: Text('Mot de passe oublié',
+                    child: Text(
+                      'Mot de passe oublié',
                       style: TextStyle(
                         color: Colors.white,
                         decoration: TextDecoration.underline,
@@ -130,7 +141,8 @@ class _LoginPageState extends State<LoginPage> {
                       MaterialPageRoute(builder: (context) => SignUpPage()),
                     );
                   },
-                  child: Text('Créer un nouveau compte',
+                  child: Text(
+                    'Créer un nouveau compte',
                     style: TextStyle(
                       color: Colors.white,
                     ),
@@ -141,6 +153,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
       ),
+    ),
     );
   }
 }

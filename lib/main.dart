@@ -41,7 +41,7 @@ class GameRank {
   final String name;
   final String description;
   final String publisher;
-  final String reviews;
+  final List<GameReview> reviews;
 
   GameRank({
     required this.rank,
@@ -59,7 +59,7 @@ class GameRank {
       name: '',
       description: '',
       publisher: '',
-      reviews: '',
+      reviews: [],
     );
   }
 }
@@ -76,15 +76,46 @@ class GameDetails {
   });
 
   factory GameDetails.fromJson(Map<String, dynamic> json) {
-    final data = json['data'];
-    final List<dynamic> publisherList = data['publishers'];
-    final List<String> publishers =
-        publisherList.map((publisher) => publisher as String).toList();
-    return GameDetails(
-      name: data['name'],
-      description: data['about_the_game'],
-      publishers: publishers,
-    );
+    print("dans fromjson");
+    if (json['data'] != null) {
+      print('non null');
+      final data = json['data'];
+
+      final List<dynamic> publisherList = data['publishers'];
+      print('publisher : $publisherList');
+      final List<String> publishers =
+          publisherList.map((publisher) => publisher as String).toList();
+      return GameDetails(
+        name: data['name'],
+        description: data['detailed_description'],
+        publishers: publishers,
+      );
+    } else {
+      print('null');
+      return GameDetails(
+        name: 'sorry no information on this game',
+        description: 'sorry no information on this game',
+        publishers: ['sorry no information on this game'],
+      );
+    }
+  }
+}
+
+class GameReview {
+  final String review;
+
+  GameReview({required this.review});
+
+  factory GameReview.fromJson(Map<String, dynamic> json) {
+    if (json['review'] != null) {
+      return GameReview(
+        review: json['review'] as String,
+      );
+    } else {
+      return GameReview(
+        review: "No review for this game",
+      );
+    }
   }
 }
 
@@ -95,9 +126,10 @@ Future<List<GameRank>> fetchMostPlayedGames() async {
   if (response.statusCode == 200) {
     final Map<String, dynamic> res = jsonDecode(response.body);
     List<dynamic> ranks = (res['response'] as Map)['ranks'];
+    // print(ranks.length);
     List<GameRank> games = [];
 
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < ranks.length; i++) {
       final gameRank = GameRank.fromJson(ranks[i]);
       final detailsResponse = await http.get(Uri.parse(
           'https://store.steampowered.com/api/appdetails?appids=${gameRank.appId}&cc=fr&l=fr'));
@@ -105,18 +137,31 @@ Future<List<GameRank>> fetchMostPlayedGames() async {
         final detailsRes = jsonDecode(detailsResponse.body);
         final details =
             GameDetails.fromJson(detailsRes[gameRank.appId.toString()]);
-        final List<dynamic> publishersJson =
-            detailsRes[gameRank.appId.toString()]['data']['publishers'];
-        final List<String> publishers =
-            publishersJson.map((json) => json as String).toList();
+        List<String> publishers = [];
+        if (detailsRes[gameRank.appId.toString()]['data'] != null) {
+          final List<dynamic> publishersJson =
+              detailsRes[gameRank.appId.toString()]['data']['publishers'];
+          publishers = publishersJson.map((json) => json as String).toList();
+        } else {
+          publishers = ["no informations", "on this game"];
+        }
 
         final reviewsResponse = await http.get(Uri.parse(
-            'https://store.steampowered.com/appreviews/${gameRank.appId}?json=1&language=fr'));
+            'https://store.steampowered.com/appreviews/${gameRank.appId}?json=1'));
         if (reviewsResponse.statusCode == 200) {
-          final reviewsRes = jsonDecode(reviewsResponse.body);
-          final List<dynamic> reviewsJson = reviewsRes['reviews'];
-          final List<String> reviews =
-              reviewsJson.map((json) => json['review'] as String).toList();
+          final Map<String, dynamic> resRev = jsonDecode(reviewsResponse.body);
+          // List<dynamic> reviews = (resRev['query_summary'] as Map)['reviews'];
+          List<dynamic> reviews = resRev['reviews'];
+          List<GameReview> avis = [];
+          for (int j = 0; j < reviews.length; j++) {
+            final rev = GameReview.fromJson(reviews[j]);
+            //print(rev.review);
+            avis.add(GameReview(review: rev.review));
+          }
+          if(reviews.length == 0)
+            {
+              avis.add(GameReview(review: 'No review for this game'));
+            }
 
           games.add(GameRank(
             rank: gameRank.rank,
@@ -124,16 +169,19 @@ Future<List<GameRank>> fetchMostPlayedGames() async {
             name: details.name,
             description: details.description,
             publisher: publishers.join(', '),
-            reviews: reviews.join('\n'),
+            reviews: avis,
           ));
-        } else {
-          throw Exception('Failed to load reviews for game ${gameRank.appId}');
         }
       } else {
-        throw Exception('Failed to load game details for ${gameRank.appId}');
+        throw Exception('Failed to load reviews for game ${gameRank.appId}');
       }
     }
 
+    /*
+for(int i=0;i<games.length;i++)
+  {
+    print(games[i].name);
+  }*/
     return games;
   } else {
     throw Exception('Failed to load top games');
@@ -175,7 +223,7 @@ class _TopGamesScreenState extends State<TopGamesScreen> {
             padding: EdgeInsets.all(10.0),
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                primary: Color(0xFF636AF6),
+                primary: Color(0xFF636AF6),backgroundColor:Color(0xFF1E262C),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -243,6 +291,7 @@ class _TopGamesScreenState extends State<TopGamesScreen> {
                             ),
                           ),
                           trailing: ElevatedButton(
+                            style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Color(0xFF636AF6))),
                             onPressed: () {
                               Navigator.push(
                                 context,
