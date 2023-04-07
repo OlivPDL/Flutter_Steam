@@ -158,10 +158,9 @@ Future<List<GameRank>> fetchMostPlayedGames() async {
             //print(rev.review);
             avis.add(GameReview(review: rev.review));
           }
-          if(reviews.length == 0)
-            {
-              avis.add(GameReview(review: 'No review for this game'));
-            }
+          if (reviews.length == 0) {
+            avis.add(GameReview(review: 'No review for this game'));
+          }
 
           games.add(GameRank(
             rank: gameRank.rank,
@@ -223,7 +222,8 @@ class _TopGamesScreenState extends State<TopGamesScreen> {
             padding: EdgeInsets.all(10.0),
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                primary: Color(0xFF636AF6),backgroundColor:Color(0xFF1E262C),
+                primary: Color(0xFF636AF6),
+                backgroundColor: Color(0xFF1E262C),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -291,7 +291,9 @@ class _TopGamesScreenState extends State<TopGamesScreen> {
                             ),
                           ),
                           trailing: ElevatedButton(
-                            style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Color(0xFF636AF6))),
+                            style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all(
+                                    Color(0xFF636AF6))),
                             onPressed: () {
                               Navigator.push(
                                 context,
