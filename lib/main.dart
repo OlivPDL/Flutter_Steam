@@ -135,7 +135,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         scaffoldBackgroundColor: Color(0xFF1A2025),
       ),
-      home: LoginPage(),
+      home: MyWidget(),
     );
   }
 }
@@ -190,7 +190,7 @@ class GameDetails {
           publisherList.map((publisher) => publisher as String).toList();
       return GameDetails(
         name: data['name'],
-        description: data['detailed_description'],
+        description: data['about_the_game'],
         publishers: publishers,
       );
     } else {
@@ -379,41 +379,49 @@ class _TopGamesScreenState extends State<TopGamesScreen> {
               },
             ),
           ),
-          Expanded(
-            child: AspectRatio(
-              aspectRatio: 8 / 3,
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  Image.network(
-                    'https://cdn.akamai.steamstatic.com/steam/apps/730/header.jpg',
-                    fit: BoxFit.cover,
-                  ),
-                  Container(
-                    color: Colors.black.withOpacity(0.4),
-                  ),
-                  Positioned(
-                    bottom: 80.0,
-                    left: 16.0,
-                    child: Text('CS: GO',
-                        style: TextStyle(
-                          fontSize: 28.0,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        )),
-                  ),
-                  Positioned(
-                    bottom: 0.0,
-                    left: 16.0,
-                    child: Text(
-                      "Counter-Strike: Global Offensive (CS:GO) étend \n le genre du jeu d'action en équipe \n dont Counter-Strike fut le pionnier \n lors de sa sortie, en 1999.",
-                      style: TextStyle(
-                        fontSize: 18.0,
-                        color: Colors.white,
+          Container(
+            width: 700,
+            height: 170,
+            child: Expanded(
+              child: Container(
+                width: 700,
+                height: 50,
+                child: AspectRatio(
+                  aspectRatio: 4 / 2,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      Image.network(
+                        'https://cdn.akamai.steamstatic.com/steam/apps/730/header.jpg',
+                        fit: BoxFit.cover,
                       ),
-                    ),
+                      Container(
+                        color: Colors.black.withOpacity(0.4),
+                      ),
+                      Positioned(
+                        bottom: 80.0,
+                        left: 16.0,
+                        child: Text('CS: GO',
+                            style: TextStyle(
+                              fontSize: 28.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            )),
+                      ),
+                      Positioned(
+                        bottom: 0.0,
+                        left: 16.0,
+                        child: Text(
+                          "Counter-Strike: Global Offensive (CS:GO) étend \n le genre du jeu d'action en équipe \n dont Counter-Strike fut le pionnier \n lors de sa sortie, en 1999.",
+                          style: TextStyle(
+                            fontSize: 18.0,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
           ),

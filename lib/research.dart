@@ -46,7 +46,7 @@ class SteamGameDetails {
     if (json['data'] != null) {
       final data = json['data'];
       return SteamGameDetails(
-        description: data['detailed_description'],
+        description: data['about_the_game'],
       );
     } else {
       return SteamGameDetails(

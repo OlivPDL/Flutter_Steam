@@ -1,4 +1,5 @@
 import 'main.dart';
+import 'login.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -147,7 +148,12 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                         actions: [
                                           TextButton(
                                             onPressed: () {
-                                              Navigator.pop(context);
+                                              Navigator.pushReplacement(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        LoginPage()),
+                                              );
                                             },
                                             child: Text(
                                               'OK',

@@ -204,7 +204,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                     'username': _usernameController.text,
                                     'email': _emailController.text,
                                     'Likelist': [],
-                                    'Whishlist': [],
+                                    //'Whishlist': [],
                                   });
                                   Navigator.pushReplacement(
                                     context,

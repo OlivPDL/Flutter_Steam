@@ -1,16 +1,12 @@
 # apisteam
 
-A new Flutter project.
+Projet Flutter API STEAM par Olivier PASDELOUP, Grégory FRADIN, Rémy GUETARI, Antoine RANSON.
 
-## Getting Started
+## 
 
-This project is a starting point for a Flutter application.
+Ce projet marche sur android. L'application se lance malgré quelques warning. Toutes les fonctionnalités sont présentes sauf likelist whishlist sur firebase (code mis en commentaire).
+L'API peut mettre du temps, du fait que j'effectue beaucoup de requetes pour beaucoup de jeux différents.
+Nous avons accès aux 200 jeux les plus joués en ce moment. Nous avons accès à l'id, le nom, la description du jeu, son publisher, ses avis.
+Le frontend et le backend sont respéctés.
+L'adresse google pour firebase est : fluttersteammobile@gmail.com. Le mot de passe est : Flutterapp. Ce sont les identifiants pour la CLI Firebase.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
