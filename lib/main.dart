@@ -9,6 +9,7 @@ import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 //import 'package:cached_network_image/cached_network_image.dart';
 
 void main() async {
@@ -17,6 +18,110 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(const MyApp());
+}
+
+class EmptyLike extends StatelessWidget {
+  const EmptyLike({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Mes likes'),
+        backgroundColor: Color(0xFF1A2025),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () async {
+              try {
+                await FirebaseAuth.instance.signOut();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                );
+              } catch (e) {
+                print('Error logging out: $e');
+              }
+            },
+          ),
+        ],
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SvgPicture.asset(
+              'assets/coeur.svg',
+              width: 100,
+              height: 100,
+              color: Colors.white,
+            ),
+            SizedBox(height: 35),
+            Text(
+              "Vous n’avez encore pas liké de contenu. \n \n Cliquez sur le coeur pour en rajouter.",
+              style: TextStyle(
+                fontFamily: 'ProximaNova',
+                fontSize: 15.27,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class EmptyWhish extends StatelessWidget {
+  const EmptyWhish({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Ma liste de souhaits'),
+        backgroundColor: Color(0xFF1A2025),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () async {
+              try {
+                await FirebaseAuth.instance.signOut();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                );
+              } catch (e) {
+                print('Error logging out: $e');
+              }
+            },
+          ),
+        ],
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SvgPicture.asset(
+              'assets/etoile.svg',
+              width: 100,
+              height: 100,
+              color: Colors.white,
+            ),
+            SizedBox(height: 35),
+            Text(
+              "Vous n’avez encore pas ajouté de jeu souhaité. \n \n Cliquez sur l'étoile pour en rajouter.",
+              style: TextStyle(
+                fontFamily: 'ProximaNova',
+                fontSize: 15.27,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -76,13 +181,11 @@ class GameDetails {
   });
 
   factory GameDetails.fromJson(Map<String, dynamic> json) {
-    print("dans fromjson");
     if (json['data'] != null) {
-      print('non null');
       final data = json['data'];
 
       final List<dynamic> publisherList = data['publishers'];
-      print('publisher : $publisherList');
+
       final List<String> publishers =
           publisherList.map((publisher) => publisher as String).toList();
       return GameDetails(
@@ -91,7 +194,6 @@ class GameDetails {
         publishers: publishers,
       );
     } else {
-      print('null');
       return GameDetails(
         name: 'sorry no information on this game',
         description: 'sorry no information on this game',
@@ -126,7 +228,7 @@ Future<List<GameRank>> fetchMostPlayedGames() async {
   if (response.statusCode == 200) {
     final Map<String, dynamic> res = jsonDecode(response.body);
     List<dynamic> ranks = (res['response'] as Map)['ranks'];
-    // print(ranks.length);
+
     List<GameRank> games = [];
 
     for (int i = 0; i < ranks.length; i++) {
@@ -155,7 +257,7 @@ Future<List<GameRank>> fetchMostPlayedGames() async {
           List<GameReview> avis = [];
           for (int j = 0; j < reviews.length; j++) {
             final rev = GameReview.fromJson(reviews[j]);
-            //print(rev.review);
+
             avis.add(GameReview(review: rev.review));
           }
           if (reviews.length == 0) {
@@ -176,11 +278,6 @@ Future<List<GameRank>> fetchMostPlayedGames() async {
       }
     }
 
-    /*
-for(int i=0;i<games.length;i++)
-  {
-    print(games[i].name);
-  }*/
     return games;
   } else {
     throw Exception('Failed to load top games');
@@ -206,12 +303,42 @@ class _TopGamesScreenState extends State<TopGamesScreen> {
         backgroundColor: Color(0xFF1A2025),
         actions: [
           IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.search),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => EmptyLike()),
+              );
+            },
+            icon: SvgPicture.asset(
+              'assets/like_vide.svg',
+              color: Colors.white,
+            ),
           ),
           IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => EmptyWhish()),
+              );
+            },
+            icon: SvgPicture.asset(
+              'assets/etoile_vide.svg',
+              color: Colors.white,
+            ),
+          ),
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () async {
+              try {
+                await FirebaseAuth.instance.signOut();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                );
+              } catch (e) {
+                print('Error logging out: $e');
+              }
+            },
           ),
         ],
       ),
@@ -237,7 +364,10 @@ class _TopGamesScreenState extends State<TopGamesScreen> {
                         MaterialPageRoute(builder: (context) => MyWidget()),
                       );
                     },
-                    icon: Icon(Icons.search),
+                    icon: Icon(
+                      Icons.search,
+                      color: Color(0xFF636AF6),
+                    ),
                   ),
                 ],
               ),
@@ -249,14 +379,55 @@ class _TopGamesScreenState extends State<TopGamesScreen> {
               },
             ),
           ),
-          Text(
-            'Les meilleures ventes',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              decoration: TextDecoration.underline,
+          Expanded(
+            child: AspectRatio(
+              aspectRatio: 8 / 3,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.network(
+                    'https://cdn.akamai.steamstatic.com/steam/apps/730/header.jpg',
+                    fit: BoxFit.cover,
+                  ),
+                  Container(
+                    color: Colors.black.withOpacity(0.4),
+                  ),
+                  Positioned(
+                    bottom: 80.0,
+                    left: 16.0,
+                    child: Text('CS: GO',
+                        style: TextStyle(
+                          fontSize: 28.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        )),
+                  ),
+                  Positioned(
+                    bottom: 0.0,
+                    left: 16.0,
+                    child: Text(
+                      "Counter-Strike: Global Offensive (CS:GO) étend \n le genre du jeu d'action en équipe \n dont Counter-Strike fut le pionnier \n lors de sa sortie, en 1999.",
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-            textAlign: TextAlign.left,
+          ),
+          Padding(
+            padding: EdgeInsets.only(left: 15.0, top: 10),
+            child: Text(
+              'Les meilleures ventes',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                decoration: TextDecoration.underline,
+              ),
+              textAlign: TextAlign.left,
+            ),
           ),
           Expanded(
             child: FutureBuilder<List<GameRank>>(

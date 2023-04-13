@@ -42,6 +42,7 @@ dependencies:
   cloud_firestore: ^4.4.5
   flutter_html: ^2.2.1
   google_fonts: ^4.0.3
+  flutter_svg: ^0.23.0+1
 
 dev_dependencies:
   flutter_test:
@@ -72,8 +73,12 @@ flutter:
 
   assets:
     - assets/ImageBackground.png
-    - assets/panda.jpg
-    - assets/chien.png
+    - assets/like_vide.svg
+    - assets/etoile_vide.svg
+    - assets/coeur.svg
+    - assets/etoile.svg
+    - assets/coeur_rempli.svg
+    - assets/etoile_rempli.svg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 
@@ -90,6 +95,12 @@ flutter:
        fonts:
          - asset: fonts/GoogleSans-Bold.ttf
            weight: 700
+
+     - family: ProximaNova
+       fonts:
+         - asset: fonts/ProximaNova-Regular.otf
+           
+      
          #- asset: fonts/Schyler-Italic.ttf
           # style: italic
      #- family: Trajan Pro

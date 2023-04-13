@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'login.dart';
 
 class SteamGame {
   final int appId;
@@ -108,21 +110,19 @@ class _MyWidgetState extends State<MyWidget> {
           if (reviewsResponse.statusCode == 200) {
             final Map<String, dynamic> resRev =
                 jsonDecode(reviewsResponse.body);
-            print("a");
-            print(resRev);
+
             // List<dynamic> reviews = (resRev['query_summary'] as Map)['reviews'];
             List<dynamic> reviews = resRev['reviews'];
-            print(reviews.length);
+
             List<SteamGameReview> avis = [];
             for (int j = 0; j < reviews.length; j++) {
               final rev = SteamGameReview.fromJson(reviews[j]);
-              print(rev.review);
+
               if (SteamGameReview(review: rev.review) != null) {
                 avis.add(SteamGameReview(review: rev.review));
               }
             }
             if (reviews.length == 0) {
-              print("review==null");
               avis.add(SteamGameReview(review: "No review for this game"));
             }
             jeux.add(SteamGame(
@@ -183,6 +183,22 @@ class _MyWidgetState extends State<MyWidget> {
             Navigator.pop(context);
           },
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () async {
+              try {
+                await FirebaseAuth.instance.signOut();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                );
+              } catch (e) {
+                print('Error logging out: $e');
+              }
+            },
+          ),
+        ],
       ),
       body: Column(
         children: <Widget>[
@@ -190,10 +206,12 @@ class _MyWidgetState extends State<MyWidget> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
-
               controller: _searchController,
               autofocus: true,
-              style: TextStyle(color: Colors.white,backgroundColor: Color(0xFF1E262C),),
+              style: TextStyle(
+                color: Colors.white,
+                backgroundColor: Color(0xFF1E262C),
+              ),
               decoration: InputDecoration(
                 hintText: "Rechercher...",
                 hintStyle: TextStyle(color: Colors.white70),
