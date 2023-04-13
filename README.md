@@ -9,6 +9,6 @@ L'API peut mettre du temps, du fait que j'effectue beaucoup de requetes pour bea
 Nous avons accès aux 200 jeux les plus joués en ce moment. Nous avons accès à l'id, le nom, la description du jeu, son publisher, ses avis.
 Le frontend et le backend sont respéctés.
 Un jeu est mis en avant, vous le retrouverez dans la liste des jeux les plus vendu pour avoir le description.
-La fonctionnalité d'oubli de mot de passe est fonctionnelle depuis le début, je l'ai laissé.
+La fonctionnalité d'oubli de mot de passe est fonctionnelle depuis le début, nous l'avons laissé.
 
 
