@@ -135,7 +135,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         scaffoldBackgroundColor: Color(0xFF1A2025),
       ),
-      home: MyWidget(),
+      home: LoginPage(),
     );
   }
 }
